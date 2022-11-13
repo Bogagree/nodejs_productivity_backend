@@ -1,5 +1,5 @@
 let http = require('http')
-const {getUsers, addUsers} = require("./repository");
+const {usersController} = require("./usersController");
 
 let cors = (req, res) => {
     // Set CORS Headers
@@ -15,19 +15,12 @@ let cors = (req, res) => {
     return false
 }
 
-
-
 let server = http.createServer((req, res) => {
     if (cors(req, res)) return
 
     switch (req.url) {
         case "/users":
-            if (req.method === "POST") {
-                addUsers("Innokentiy")
-                res.write(JSON.stringify({suscess: true}));
-            } else {
-                res.write(JSON.stringify(getUsers()))
-            }
+            usersController(req,res)
             break;
         case "/lessons":
             res.write(`tasks`)
@@ -35,10 +28,8 @@ let server = http.createServer((req, res) => {
         default:
             res.write(`PAGE NOT FOUND`)
     }
-
-    res.end()
 })
 
 server.listen(7915)
 
-console.log(http)
+// console.log(http)

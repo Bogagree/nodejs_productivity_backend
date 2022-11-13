@@ -1,14 +1,32 @@
-let users = [
-    {"id": 1, "name": "Dimych"}, {"id": 2, "name": "Natasha"}, {"id": 3, "name": "Gleb"}, {"id": 4, "name": "Alisa"}
-];
+const fs = require("fs")
 
 const getUsers = () => {
-    return users
+
+    let promise = new Promise((res, rej) => {
+        fs.readFile("db", {encoding: 'utf8'}, function (err, data) {
+            if (err) {
+                console.error('my err', err);
+                rej(err)
+            } else {
+                res(JSON.parse(data.toString()))
+                // res(JSON.stringify(data.toString()))
+            }
+        })
+    })
+    return promise;
 }
 
-const addtUsers = (name) => {
-    users.push({name: name})
+const addUsers = async (name) => {
+    let users = await getUsers()
+    users.push({"name": name})
+    return new Promise((res, rej) => {
+        fs.writeFile("db", JSON.stringify(users), {encoding: 'utf8'}, err => {
+            if (err) rej(err);
+            console.log('file written successfully');
+            res()
+        })
+    })
 }
 
 exports.getUsers = getUsers;
-exports.addUsers = addtUsers;
+exports.addUsers = addUsers;
