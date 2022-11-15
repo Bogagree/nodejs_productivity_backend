@@ -1,35 +1,46 @@
-let http = require('http')
-const {usersController} = require("./usersController");
+const express = require('express')
+const {getUsers, addUsers} = require("./repository");
 
-let cors = (req, res) => {
-    // Set CORS Headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Request-Method', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-    if (req.method === 'OPTIONS') {
-        res.writeHead(200);
-        res.end();
-        return true
-    }
-    return false
-}
+const app = express()
+const port = 7915
 
-let server = http.createServer((req, res) => {
-    if (cors(req, res)) return
+app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', `http://localhost:${3000}`);
 
-    switch (req.url) {
-        case "/users":
-            usersController(req,res)
-            break;
-        case "/lessons":
-            res.write(`tasks`)
-            break;
-        default:
-            res.write(`PAGE NOT FOUND`)
-    }
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
 })
 
-server.listen(7915)
+app.get('/users', async (req, res) => {
+    let users = await getUsers();
+    res.send(users)
+})
 
-// console.log(http)
+app.get('/tasks', async (req, res) => {
+    res.send('tasks')
+})
+
+app.post('/users', async (req, res) => {
+    let result = await addUsers('Ignat')
+    res.send({success: true});
+})
+
+// default action
+app.use(function (req, res) {
+    res.send({value: 404});
+});
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})

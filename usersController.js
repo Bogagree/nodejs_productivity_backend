@@ -1,9 +1,11 @@
 const {addUsers, getUsers} = require("./repository");
 
+
 exports.usersController = async (req, res) => {
     if (req.method === "POST") {
         //action
-        let result = await addUsers("Innokentiy")
+        debugger
+        let result = await addUsers('Fedor')
         res.write(JSON.stringify({success: true}));
         res.end()
     } else {
