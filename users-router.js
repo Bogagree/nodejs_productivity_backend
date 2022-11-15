@@ -11,7 +11,7 @@ router.use(function timeLog(req, res, next) {
     next();
 });
 
-router.get('/:id',async function (req, res) {
+router.get('/:id', async function (req, res) {
     let userId = req.params.id
     let users = await getUsers();
     let user = users.find(u => u.id === userId)
@@ -22,8 +22,11 @@ router.get('/:id',async function (req, res) {
     }
 })
 
-router.get('/',async function (req, res) {
+router.get('/', async function (req, res) {
     let users = await getUsers();
+    if (!!req.query.search) {
+        users = users.filter( user => user.name.includes(req.query.search))
+    }
     res.send(users)
 })
 
